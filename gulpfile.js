@@ -114,10 +114,6 @@ gulp.task('server', () => {
     ], plugins.developServer.restart);
 });
 
-gulp.task('heroku', (callback) => {
-    runSequence('clean', 'css', 'wire-dep', 'copy', 'babelify-client', 'cache-templates', 'babelify-server', callback);
-});
-
 gulp.task('refresh', (callback) => {
     runSequence('css', 'wire-dep', 'copy', 'babelify-client', 'cache-templates', 'babelify-server', callback);
 });
