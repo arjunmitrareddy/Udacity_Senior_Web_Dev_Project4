@@ -1,0 +1,59 @@
+{
+  "name": "restaurant-reviewer",
+  "description": "A Corporate Dashboard Application",
+  "main": "gulpfile.js",
+  "authors": [
+    "Arjun Mitra Reddy Donthala"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.5.7",
+    "jquery": "1.9.1",
+    "angular-ui-router": "ui-router#^0.3.1",
+    "font-awesome": "^4.6.3",
+    "lodash": "^4.13.1",
+    "angular-bootstrap": "^1.3.3",
+    "angular-touch": "^1.5.7",
+    "angular-animate": "^1.5.7",
+    "bootstrap": "^3.3.6",
+    "datamaps": "^0.5.7",
+    "topojson": "^1.6.26",
+    "d3": "^4.1.1",
+    "jquery-csv": "^0.8.2",
+    "highcharts": "^4.2.5",
+    "socket.io-client": "^1.4.8"
+  },
+  "overrides": {
+    "bootstrap": {
+      "main": [
+        "dist/js/bootstrap.js",
+        "dist/css/bootstrap.css"
+      ]
+    },
+    "font-awesome": {
+      "main": [
+        "css/font-awesome.css",
+        "css/font-awesome.css.map"
+      ]
+    },
+    "datamaps": {
+      "main": [
+        "dist/datamaps.world.min.js"
+      ]
+    },
+    "socket.io-client": {
+      "main": [
+        "socket.io.js"
+      ]
+    }
+  }
+}

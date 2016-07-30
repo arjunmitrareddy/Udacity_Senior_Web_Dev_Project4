@@ -1,0 +1,50 @@
+{
+  "name": "restaurant-reviewer",
+  "version": "1.0.0",
+  "description": "A Corporate Dashboard Application",
+  "main": "gulpfile.js",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "compression": "^1.5.2",
+    "express": "^4.13.3",
+    "minimist": "^1.2.0",
+    "path": "^0.12.7",
+    "request": "^2.73.0",
+    "socket-io": "0.0.0",
+    "socket.io": "^1.4.8",
+    "yelp": "^1.0.1"
+  },
+  "devDependencies": {
+    "bower": "^1.7.9",
+    "del": "^2.2.1",
+    "gulp": "^3.9.0",
+    "gulp-angular-templatecache": "^2.0.0",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-babel": "^5.2.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-csso": "^2.0.0",
+    "gulp-develop-server": "^0.5.2",
+    "gulp-filter": "^4.0.0",
+    "gulp-imagemin": "^3.0.1",
+    "gulp-inject": "^4.1.0",
+    "gulp-load-plugins": "^0.10.0",
+    "gulp-minify-html": "^1.0.6",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sass": "^2.0.4",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.4",
+    "gulp-useref": "^3.1.0",
+    "gulp-util": "^3.0.6",
+    "merge-stream": "^1.0.0",
+    "run-sequence": "^1.1.2",
+    "wiredep": "^4.0.0"
+  },
+  "scripts": {
+    "dep": "npm install && bower install",
+    "start": "gulp server",
+    "serve": "gulp serve",
+    "postinstall": "bower install"
+  },
+  "author": "Arjun Mitra Reddy Donthala",
+  "license": "MIT"
+}

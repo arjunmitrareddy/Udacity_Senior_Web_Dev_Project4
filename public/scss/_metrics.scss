@@ -1,0 +1,35 @@
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+.x.axis path {
+  display: none;
+}
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+#lineGraphBox {
+  height:80%;
+}
+#lineGraph {
+  position:relative;
+  height:100%;
+}
+.metricsTitle {
+  font-size: 20px;
+}
+.viewPanel {
+  margin-top: 5%;
+}
+.centerBody {
+  text-align: center;
+}
+.metricIssuePanelHeading {
+  background: black !important;
+  font-weight: bold;
+  color: white !important;
+}

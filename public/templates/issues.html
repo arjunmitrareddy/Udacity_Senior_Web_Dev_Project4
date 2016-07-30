@@ -1,0 +1,23 @@
+<div class="row">
+    <div class="col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-10 col-sm-10 col-md-10 col-lg-10 geoRow">
+        <div class="panel panel-default" ng-if="issues">
+            <div class="panel-heading issuePanelHeading">Open Issues</div>
+            <table class="route-table rwd-table table">
+                <tr>
+                    <th>Issue Number</th>
+                    <th>Description</th>
+                    <th>Reported By</th>
+                    <th>Assigned To</th>
+                    <th>Date Opened</th>
+                </tr>
+                <tr class="table-hover" style="text-align: left" ng-repeat="issue in issues track by $index">
+                    <td data-th="Issue Number">{{issue.ino}}</td>
+                    <td data-th="Description">{{issue.description}}</td>
+                    <td data-th="Reported By">{{issue.reporter}}</td>
+                    <td data-th="Assigned To">{{issue.assignedto}}</td>
+                    <td data-th="Date Opened">{{issue.date}}</td>
+                </tr>
+            </table>
+            </div>
+    </div>
+</div>

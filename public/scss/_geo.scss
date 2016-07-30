@@ -1,0 +1,42 @@
+svg {
+   overflow: visible !important;
+   g {
+      overflow: visible !important;
+   }
+}
+.geoRow {
+   text-align: center;
+}
+.geoTitle {
+   font-size: 15px;
+}
+@media screen and (max-width: 767px) {
+   .mapContainer {
+      position: relative;
+      top: 10%;
+   }
+}
+
+/* sm */
+@media screen and (min-width: 768px) {
+   .mapContainer {
+      position: relative;
+      top: 15%;
+   }
+}
+
+/* md */
+@media screen and (min-width: 992px) {
+   .mapContainer {
+      position: relative;
+      top: 20%;
+   }
+}
+
+/* lg */
+@media screen and (min-width: 1200px) {
+   .mapContainer {
+      position: relative;
+      top: 30%;
+   }
+}
