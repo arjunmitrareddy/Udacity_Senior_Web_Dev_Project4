@@ -1,23 +1,100 @@
-<div class="row">
+<div class="row geoRow" id="filtersBox">
+    Filters:
+    <div class="col-xs-12 col-sm-12 geoRow">
+        <div class="filterBrkpt">
+            <button ng-click="iCtrl.sort('a', issues, true)" type="button" class="btn">
+                Submission Timestamp <span ng-if="iCtrl.a && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.a && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+            </button>
+        </div>
+        <div class="filterBrkpt">
+            <button ng-click="iCtrl.sort('b', issues, true)" type="button" class="btn">
+                Customer Name <span ng-if="iCtrl.b && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.b && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+            </button>
+        </div>
+        <div class="filterBrkpt">
+            <button ng-click="iCtrl.sort('c', issues, true)" type="button" class="btn">
+                Customer Email <span ng-if="iCtrl.c && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.c && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+            </button>
+        </div>
+        <div class="filterBrkpt">
+            <button ng-click="iCtrl.sort('d', issues, true)" type="button" class="btn">
+                Description <span ng-if="iCtrl.d && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.d && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+            </button>
+        </div>
+        <div class="filterBrkpt">
+            <button ng-click="iCtrl.sort('e', issues, true)" type="button" class="btn">
+                Status <span ng-if="iCtrl.e && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.e && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+            </button>
+        </div>
+        <div class="filterBrkpt">
+            <button ng-click="iCtrl.sort('f', issues, true)" type="button" class="btn">
+                Closed Timestamp <span ng-if="iCtrl.f && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.f && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+            </button>
+        </div>
+        <div class="filterBrkpt">
+            <button ng-click="iCtrl.sort('g', issues, true)" type="button" class="btn">
+                Employee Name <span ng-if="iCtrl.g && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.g && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+            </button>
+        </div>
+        <div class="filterBrkpt">
+            <button ng-if="iCtrl.sortSet" ng-click="iCtrl.c && iCtrl.sortSetlearFilter()" type="button" class="btn">
+                Clear Filter
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row geoRow">
+    <div class="filterBrkpt"><button ng-if="iCtrl.sortSet" ng-click="iCtrl.c && iCtrl.sortSetlearFilter()" type="button" class="btn">Clear Filter</button></div>
     <div class="col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-10 col-sm-10 col-md-10 col-lg-10 geoRow">
-        <div class="panel panel-default" ng-if="issues">
-            <div class="panel-heading issuePanelHeading">Open Issues</div>
             <table class="route-table rwd-table table">
                 <tr>
-                    <th>Issue Number</th>
-                    <th>Description</th>
-                    <th>Reported By</th>
-                    <th>Assigned To</th>
-                    <th>Date Opened</th>
+                    <th>
+                        <button type="button" class="btn" ng-click="iCtrl.sort('a', issues, true)">
+                            Submission Timestamp <span ng-if="iCtrl.a && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.a && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button" class="btn" ng-click="iCtrl.sort('b', issues, true)">
+                            Customer Name <span ng-if="iCtrl.b && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.b && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button" class="btn" ng-click="iCtrl.sort('c', issues, true)">
+                            Customer Email <span ng-if="iCtrl.c && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.c && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button" class="btn" ng-click="iCtrl.sort('d', issues, true)">
+                            Description <span ng-if="iCtrl.d && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.d && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button" class="btn" ng-click="iCtrl.sort('e', issues, true)">
+                            Status <span ng-if="iCtrl.e && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.e && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button" class="btn" ng-click="iCtrl.sort('f', issues, true)">
+                            Closed Timestamp <span ng-if="iCtrl.f && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.f && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+                        </button>
+                    </th>
+                    <th>
+                        <button type="button" class="btn" ng-click="iCtrl.sort('g', issues, true)">
+                            Employee Name <span ng-if="iCtrl.g && iCtrl.sortSet" class="glyphicon glyphicon-chevron-down"></span> <span ng-if="!iCtrl.g && iCtrl.sortSet" class="glyphicon glyphicon-chevron-up"></span>
+                        </button>
+                    </th>
                 </tr>
                 <tr class="table-hover" style="text-align: left" ng-repeat="issue in issues track by $index">
-                    <td data-th="Issue Number">{{issue.ino}}</td>
+                    <td data-th="Submission Timestamp">{{issue.stimestamp}}</td>
+                    <td data-th="Customer Name">{{issue.customername}}</td>
+                    <td data-th="Customer Email">{{issue.customeremail}}</td>
                     <td data-th="Description">{{issue.description}}</td>
-                    <td data-th="Reported By">{{issue.reporter}}</td>
-                    <td data-th="Assigned To">{{issue.assignedto}}</td>
-                    <td data-th="Date Opened">{{issue.date}}</td>
+                    <td data-th="Status" ng-if="issue.status">Closed</td>
+                    <td data-th="Status" ng-if="!issue.status">Open</td>
+                    <td data-th="Closed Timestamp" ng-if="issue.closedtimestamp">{{issue.closedtimestamp}}</td>
+                    <td data-th="Closed Timestamp" ng-if="!issue.closedtimestamp">N/A</td>
+                    <td data-th="Employee Name">{{issue.employeename}}</td>
                 </tr>
             </table>
-            </div>
     </div>
 </div>

@@ -7,9 +7,9 @@
     angular.module('corpdash')
         .controller('geoController', geoController);
 
-    geoController.$inject = ['serviceConnectorFactory', '$q'];
+    geoController.$inject = ['serviceConnectorFactory', '$q', '$state', '$rootScope'];
 
-    function geoController(serviceConnectorFactory, $q) {
+    function geoController(serviceConnectorFactory, $q, $state, $rootScope) {
         var gCtrl = this;
         function adjustView() {
             var defer = $q.defer();
@@ -28,7 +28,7 @@
             return defer.promise;
         }
         adjustView().then(getGeoData());
-        function getGeoData() {
+        function getGeoData(fromSocket) {
             $('#container').empty();
             var bombMap = new Datamap({
                 element: document.getElementById('container'),
@@ -72,6 +72,23 @@
 
                 }
             });
+            if (fromSocket) {
+                var circles = $.csv.toArrays(fromSocket).map(function(csv) {
+                    var obj = {};
+                    obj['radius'] = csv[0];
+                    obj['fillKey'] = csv[1];
+                    obj['name'] = csv[2];
+                    obj['latitude'] = csv[3];
+                    obj['longitude'] = csv[4];
+                    return obj;
+                });
+                bombMap.bubbles(circles, {
+                    popupTemplate: function (geo, data) {
+                        return ['<div class="hoverinfo">' +  data.name + " </br> " + data.radius + " Thousand Employees" + '</div>'];
+                    }
+                });
+                return;
+            }
             serviceConnectorFactory.get('/csv/geo.csv').then(function(data) {
                 var circles = $.csv.toArrays(data).map(function(csv) {
                     var obj = {};
@@ -89,6 +106,15 @@
                 });
             })
         }
-        $(window).resize(getGeoData);
+        $(window).resize(function() {
+            getGeoData(false);
+        });
+        $rootScope.socket.on('poll-server', function(data) {
+            if (data.geo && $state.current.name == 'geoview') {
+                serviceConnectorFactory.get('/csv/geo.csv').then(function (data) {
+                    getGeoData(data);
+                });
+            }
+        });
     }
 })();

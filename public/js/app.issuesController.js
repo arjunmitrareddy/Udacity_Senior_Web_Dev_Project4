@@ -7,10 +7,26 @@
     angular.module('corpdash')
         .controller('issuesController', issuesController);
 
-    issuesController.$inject = [];
+    issuesController.$inject = ['$state', '$rootScope', 'serviceConnectorFactory'];
 
-    function issuesController() {
+    function issuesController($state, $rootScope, serviceConnectorFactory) {
         var iCtrl = this;
+        var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+        if (width <= 992) {
+            $('#filtersBox').show();
+        }
+        else {
+            $('#filtersBox').hide();
+        }
+        $(window).resize(function() {
+            width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+            if (width <= 992) {
+                $('#filtersBox').show();
+            }
+            else {
+                $('#filtersBox').hide();
+            }
+        });
 
         function adjustView() {
             var $viewField = $('#viewField');
@@ -24,6 +40,98 @@
                 }
             });
         }
-        adjustView()
+        adjustView();
+        $rootScope.socket.on('poll-server', function(data) {
+            if (data.issues && $state.current.name == 'issues') {
+                serviceConnectorFactory.get('/json/issues.json').then(function (data) {
+                    var arr = data.map(function(issue) {
+                        var strArr = issue.description.split(" ");
+                        var sub = [strArr[0], strArr[1], strArr[2]].join(" ");
+                        issue.description = sub.toUpperCase();
+                        return issue;
+                    });
+                    iCtrl.backup = angular.copy(arr);
+                    if (iCtrl.sortSet) {
+                        console.log(iCtrl.sortSet);
+                        $rootScope.issues = iCtrl.sort(iCtrl.sortSet, arr, false)
+                    }
+                    else {
+                        $rootScope.setIssues(arr);
+                    }
+                });
+            }
+        });
+        iCtrl.a = false;
+        iCtrl.b = false;
+        iCtrl.c = false;
+        iCtrl.d = false;
+        iCtrl.e = false;
+        iCtrl.f = false;
+        iCtrl.g = false;
+        iCtrl.sort = function(sort, issues, toggler) {
+            switch (sort) {
+                case "a":
+                    if (toggler)
+                    iCtrl.a = !iCtrl.a;
+                    iCtrl.sortSet = "a";
+                    $rootScope.issues = (iCtrl.a) ? _.sortBy(issues, function(issue) {return issue.stimestamp})
+                        : _.sortBy($rootScope.issues, function(issue) {return issue.stimestamp}).reverse();
+                    return $rootScope.issues;
+                case "b":
+                    if (toggler)
+                    iCtrl.b = !iCtrl.b;
+                    iCtrl.sortSet = "b";
+                    $rootScope.issues = (iCtrl.b) ? _.sortBy(issues, function(issue) {return issue.customername})
+                        : _.sortBy($rootScope.issues, function(issue) {return issue.customername}).reverse();
+                    return $rootScope.issues;
+                case "c":
+                    if (toggler)
+                    iCtrl.c = !iCtrl.c;
+                    iCtrl.sortSet = "c";
+                    $rootScope.issues = (iCtrl.c) ? _.sortBy(issues, function(issue) {return issue.customeremail})
+                        : _.sortBy($rootScope.issues, function(issue) {return issue.customeremail}).reverse();
+                    return $rootScope.issues;
+                case "d":
+                    if (toggler)
+                    iCtrl.d = !iCtrl.d;
+                    iCtrl.sortSet = "d";
+                    $rootScope.issues = (iCtrl.d) ? _.sortBy(issues, function(issue) {return issue.description})
+                        : _.sortBy($rootScope.issues, function(issue) {return issue.description}).reverse();
+                    return $rootScope.issues;
+                case "e":
+                    if (toggler)
+                    iCtrl.e = !iCtrl.e;
+                    iCtrl.sortSet = "e";
+                    $rootScope.issues = (iCtrl.e) ? _.sortBy(issues, function(issue) {return issue.status})
+                        : _.sortBy($rootScope.issues, function(issue) {return issue.status}).reverse();
+                    return $rootScope.issues;
+                case "f":
+                    if (toggler)
+                    iCtrl.f = !iCtrl.f;
+                    iCtrl.sortSet = "f";
+                    $rootScope.issues = (iCtrl.f) ? _.sortBy(issues, function(issue) {return issue.closedtimestamp})
+                        : _.sortBy($rootScope.issues, function(issue) {return issue.closedtimestamp}).reverse();
+                    return $rootScope.issues;
+                case "g":
+                    if (toggler)
+                    iCtrl.g = !iCtrl.g;
+                    iCtrl.sortSet = "g";
+                    $rootScope.issues = (iCtrl.g) ? _.sortBy(issues, function(issue) {return issue.employeename})
+                        : _.sortBy($rootScope.issues, function(issue) {return issue.employeename}).reverse();
+                    return $rootScope.issues;
+
+            }
+        };
+        iCtrl.clearFilter = function() {
+            iCtrl.sortSet = null;
+            iCtrl.a = false;
+            iCtrl.b = false;
+            iCtrl.c = false;
+            iCtrl.d = false;
+            iCtrl.e = false;
+            iCtrl.f = false;
+            iCtrl.g = false;
+            $rootScope.issues = angular.copy(iCtrl.backup);
+        }
     }
 })();

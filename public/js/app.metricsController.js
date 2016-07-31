@@ -7,15 +7,13 @@
     angular.module('corpdash')
         .controller('metricsController', metricsController);
 
-    metricsController.$inject = ['$q', 'serviceConnectorFactory', '$state'];
+    metricsController.$inject = ['$q', 'serviceConnectorFactory', '$state', '$rootScope'];
 
-    function metricsController($q, serviceConnectorFactory, $state) {
+    function metricsController($q, serviceConnectorFactory, $state, $rootScope) {
         var mCtrl = this;
         mCtrl.switchToIssues = function() {
             $state.go('issues');
         };
-        var newCustomers = false;
-        var newReports = false;
         var chart1;
         var chart2;
         function adjustView() {
@@ -44,7 +42,7 @@
                 chart1.redraw();
                 chart1.reflow();
             });
-            serviceConnectorFactory.get('/json/years.json').then(function (data) {
+            serviceConnectorFactory.get('/json/customers.json').then(function (data) {
                 chart1 = new Highcharts.Chart({
                     chart: {
                         renderTo: 'lineGraph'
@@ -77,7 +75,7 @@
 
         function barChart() {
             var defer = $q.defer();
-            serviceConnectorFactory.get('/json/reports.json').then(function (data) {
+            serviceConnectorFactory.get('/json/reportedIssues.json').then(function (data) {
                 chart2 = new Highcharts.Chart({
                     chart: {
                         renderTo: 'barGraphBox',
@@ -103,22 +101,17 @@
             defer.resolve();
             return defer.promise;
         }
-        var socket = io.connect(location.protocol + "//" + location.host);
-       // console.log($location.absUrl);
-        socket.emit('randomize');
-        socket.on('randomReady', function(data) {
-            console.log(data);
-                if (data.done) {
-                    serviceConnectorFactory.get('/json/years.json').then(function (data) {
+        $rootScope.socket.on('poll-server', function(data) {
+                if (data.metrics && $state.current.name == 'metrics') {
+                    serviceConnectorFactory.get('/json/customers.json').then(function (data) {
                         var obj = {
                             name: 'Customers',
                             data: data.customers
                         };
                         chart1.series[0].setData(data.customers,true);
-                        newCustomers = false;
                     });
 
-                    serviceConnectorFactory.get('/json/reports.json').then(function(data) {
+                    serviceConnectorFactory.get('/json/reportedIssues.json').then(function(data) {
                         console.log(data.issues);
                         for (var i=0; i<chart2.series.length; i++) {
                             chart2.series[i].setData(data.issues[i].data, true)
