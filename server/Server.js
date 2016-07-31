@@ -9,7 +9,6 @@ import path from 'path';
 import request from 'request';
 import fs from 'fs';
 import bodyParser from 'body-parser';
-import Yelp from 'yelp';
 import socketio from 'socket.io';
 import events from 'events';
 import yearsFile from '../public/json/years.json'
@@ -33,24 +32,6 @@ export default class Server {
         this._app.use(bodyParser.urlencoded({ extended: true }));
         this._app.use(bodyParser.json());
         this._serveStaticFiles();
-        this._app.post('/getRest', (req, res) => {
-            var query = req.body.query.replace(" ", '%2B');
-            yelp.search({ term: 'restaurant', location: query })
-                .then((data) => {
-                    res.json(data);
-                })
-                .catch((err) => {
-                    console.error(err);
-                });
-        });
-        this._app.post('/getReviews', (req, res) => {
-            var id = req.body.restID;
-
-            yelp.business(id)
-                .then(((data) => {
-                    res.json(data);
-                }));
-        });
         this._app.get('*', (req, res) => {
             res.sendFile(path.resolve(__dirname, '../public/index.html'));
         });
@@ -106,9 +87,3 @@ export default class Server {
         return Math.round(Math.random() * (max - min) + min);
     }
 }
-var yelp = new Yelp({
-    consumer_key: '3HyZbHykh_9ScFKaFRa8uA',
-    consumer_secret: 'HMGYEnperxjJz_Pta11KjxJncmw',
-    token: 'g3tEIcMeOxLFH6nkZJEpF_56c5NXUWDu',
-    token_secret: '8R3naCTfgk_qjoyFCC4kte0VClk'
-});
