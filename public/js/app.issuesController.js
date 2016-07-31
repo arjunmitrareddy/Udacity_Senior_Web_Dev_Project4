@@ -13,17 +13,21 @@
         var iCtrl = this;
         var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
         if (width <= 992) {
+            iCtrl.brkpt = true;
             $('#filtersBox').show();
         }
         else {
+            iCtrl.brkpt = false;
             $('#filtersBox').hide();
         }
         $(window).resize(function() {
             width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
             if (width <= 992) {
+                iCtrl.brkpt = true;
                 $('#filtersBox').show();
             }
             else {
+                iCtrl.brkpt = false;
                 $('#filtersBox').hide();
             }
         });
@@ -71,7 +75,6 @@
         iCtrl.sort = function(sort, issues, toggler) {
             switch (sort) {
                 case "a":
-                    if (toggler)
                     iCtrl.a = !iCtrl.a;
                     iCtrl.sortSet = "a";
                     $rootScope.issues = (iCtrl.a) ? _.sortBy(issues, function(issue) {return issue.stimestamp})
