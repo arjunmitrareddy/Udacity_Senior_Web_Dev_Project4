@@ -61,7 +61,7 @@ gulp.task('babelify-client', () => {
     var cssFilter = plugins.filter('**/*.css', {restore: true});
     var jsFilter = plugins.filter('**/*.js', {restore: true});
     gulp.src('public/index.html').pipe(plugins.plumber()).pipe(assets).pipe(cssFilter).pipe(plugins.csso({comments: false})).pipe(plugins.sourcemaps.init()).pipe(plugins.sourcemaps.write('./')).pipe(cssFilter.restore)
-        .pipe(jsFilter)/*.pipe(plugins.sourcemaps.init()).pipe(plugins.uglify()).pipe(plugins.sourcemaps.write('./'))*/.pipe(jsFilter.restore)
+        .pipe(jsFilter).pipe(plugins.sourcemaps.init()).pipe(plugins.uglify()).pipe(plugins.sourcemaps.write('./')).pipe(jsFilter.restore)
         .pipe(gulp.dest('build/public'))
 });
 
