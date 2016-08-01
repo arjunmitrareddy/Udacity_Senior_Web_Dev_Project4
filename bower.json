@@ -25,12 +25,13 @@
     "angular-touch": "^1.5.7",
     "angular-animate": "^1.5.7",
     "bootstrap": "^3.3.6",
-    "datamaps": "^0.5.7",
-    "topojson": "^1.6.26",
-    "d3": "#3.5.6",
+    "topojson": "#~1.4.3",
+    "d3": "#~3.3.8",
+    "datamaps": "#0.4.0",
     "jquery-csv": "^0.8.2",
     "highcharts": "^4.2.5",
-    "socket.io-client": "^1.4.8"
+    "socket.io-client": "^1.4.8",
+    "angular-datamaps": "^0.1.2"
   },
   "overrides": {
     "bootstrap": {

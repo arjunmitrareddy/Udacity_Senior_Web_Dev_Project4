@@ -22,7 +22,6 @@
                         scope.chart = new Highcharts.Chart(scope.data);
                     }
                     else {
-                        console.log(JSON.parse(value));
                         scope.data = JSON.parse(value);
                         for (var i=0; i<scope.chart.series.length; i++) {
                             scope.chart.series[i].setData(scope.data.series[i].data, true)

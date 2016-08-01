@@ -7,15 +7,12 @@
 
     function issuesController($state, $rootScope, serviceConnectorFactory, $timeout, $scope, $window) {
         var iCtrl = this;
-        $timeout(function() {
-            $rootScope.socket.emit('poll-client-issues');
-        }, 4000);
+        $rootScope.socket.emit('poll-client-issues');
         var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
         iCtrl.brkpt = (width <= 992);
         angular.element($window).bind('resize', function() {
             var w = (window.innerWidth > 0) ? window.innerWidth : screen.width;
             iCtrl.brkpt = (w <= 992);
-            console.log(iCtrl.brkpt);
             $scope.$apply();
         });
 
@@ -33,9 +30,9 @@
         }
         adjustView();
         $rootScope.socket.on('poll-server', function(data) {
-            if (data.issues && $state.current.name == 'issues') {
-                serviceConnectorFactory.get('/json/issues.json').then(function (data) {
-                    var arr = data.map(function(issue) {
+            if (data.issues && $state.current.name == 'issues' && data.changes) {
+                    var dataC = data.changes;
+                    var arr = dataC.map(function(issue) {
                         var strArr = issue.description.split(" ");
                         var sub = [strArr[0], strArr[1], strArr[2]].join(" ");
                         issue.description = sub.toUpperCase();
@@ -43,18 +40,22 @@
                     });
                     iCtrl.backup = angular.copy(arr);
                     if (iCtrl.sortSet && !iCtrl.filterSet) {
-                        $rootScope.issues = iCtrl.sort(iCtrl.sortSet, arr, false)
+                        $rootScope.issues = iCtrl.sort(iCtrl.sortSet, arr, false);
+                        $scope.$apply();
                     }
                     else if (!iCtrl.sortSet && iCtrl.filterSet) {
-                        $rootScope.issues = iCtrl.filter(iCtrl.filterSet, arr)
+                        $rootScope.issues = iCtrl.filter(iCtrl.filterSet, arr);
+                        $scope.$apply();
                     }
                     else if (iCtrl.sortSet && iCtrl.filterSet) {
                         $rootScope.issues = iCtrl.sort(iCtrl.sortSet, iCtrl.filter(iCtrl.filterSet, arr), false);
+                        $scope.$apply();
                     }
                     else {
-                        $rootScope.setIssues(arr);
+                        console.log("here");
+                        $rootScope.issues = arr;
+                        $scope.$apply();
                     }
-                });
             }
         });
         iCtrl.a = false;
@@ -64,19 +65,19 @@
         iCtrl.e = false;
         iCtrl.f = false;
         iCtrl.g = false;
-        iCtrl.filter = function(filter, issues) {
+        iCtrl.filter = function(filter) {
             switch (filter) {
                 case "a":
                     iCtrl.filterSet = "a";
-                    $rootScope.issues = _.filter(issues, function(issue) {return issue.status == false});
+                    $rootScope.issues = _.filter(iCtrl.backup, function(issue) {return issue.status == false});
                     return $rootScope.issues;
                 case "b":
                     iCtrl.filterSet = "b";
-                    $rootScope.issues = _.filter(issues, function(issue) {return issue.status == true});
+                    $rootScope.issues = _.filter(iCtrl.backup, function(issue) {return issue.status == true});
                     return $rootScope.issues;
                 case "c":
                     iCtrl.filterSet = "c";
-                    $rootScope.issues = _.filter(issues, function(issue) {
+                    $rootScope.issues = _.filter(iCtrl.backup, function(issue) {
                         var yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).getTime();
                         return issue.stimestamp > (yesterday);
                     });

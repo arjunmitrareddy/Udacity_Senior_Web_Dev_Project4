@@ -7,13 +7,11 @@
     angular.module('corpdash')
         .controller('metricsController', metricsController);
 
-    metricsController.$inject = ['$q', 'serviceConnectorFactory', '$state', '$rootScope', '$timeout'];
+    metricsController.$inject = ['$q', 'serviceConnectorFactory', '$state', '$rootScope', '$timeout', '$scope'];
 
-    function metricsController($q, serviceConnectorFactory, $state, $rootScope, $timeout) {
+    function metricsController($q, serviceConnectorFactory, $state, $rootScope, $timeout, $scope) {
         var mCtrl = this;
-        $timeout(function() {
-            $rootScope.socket.emit('poll-client-metrics');
-        }, 4000);
+        $rootScope.socket.emit('poll-client-metrics');
         mCtrl.switchToIssues = function() {
             $state.go('issues');
         };
@@ -37,9 +35,8 @@
 
         adjustView().then(lineChart).then(barChart);
 
-        function lineChart() {
+        function lineChart(data) {
             var defer = $q.defer();
-            serviceConnectorFactory.get('/json/customers.json').then(function (data) {
                 mCtrl.lineChartData = data;
                 mCtrl.lineChart = {
                     options: {
@@ -67,14 +64,13 @@
                         }
                     }
                 };
-            });
+            $scope.$apply();
             defer.resolve();
             return defer.promise;
         }
 
-        function barChart() {
+        function barChart(data) {
             var defer = $q.defer();
-            serviceConnectorFactory.get('/json/reportedIssues.json').then(function (data) {
                 mCtrl.barChartData = data;
                 mCtrl.barChart = {
                     options: {
@@ -99,14 +95,15 @@
                         }
                     }
                 };
-            });
+            $scope.$apply();
             defer.resolve();
             return defer.promise;
         }
         $rootScope.socket.on('poll-server', function(data) {
                 if (data.metrics && $state.current.name == 'metrics') {
-                    lineChart();
-                    barChart();
+                    console.log(data);
+                    lineChart(data.changesCustomer);
+                    barChart(data.changesReport);
                 }
         });
     }

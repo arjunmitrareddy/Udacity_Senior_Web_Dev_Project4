@@ -117,60 +117,27 @@ export default class Server {
         fs.writeFile(REPORTS_JSON, JSON.stringify(reportsFile, null, 2), (err) => {
             if (err) console.log(err);
         });
-        socket.emit('poll-server', {metrics: true});
+        socket.emit('poll-server', {metrics: true, changesReport: reportsFile, changesCustomer: customersFile});
     }
     _updateGeoCsv(socket) {
         var csv = [];
-        var changes = false;
         fastcsv
             .fromPath(GEO_CSV)
             .on("data", (data) => {
-                data[0] = (parseInt(data[0]) + 1).toString();
                 csv.push(data);
             })
             .on("end", () => {
-                fastcsv
-                    .writeToPath(GEO_CSV, csv, {headers: true})
-                    .on('finish', () => {
-                        var newCsv = [];
-                        fastcsv
-                            .fromPath(GEO_CSV)
-                            .on("data", (data) => {
-                                newCsv.push(data);
-                            })
-                            .on("finish", () => {
-                                newCsv = newCsv.map((csvElem) => {
-                                    var obj = {};
-                                    obj['radius'] = 15;
-                                    obj['size'] = csvElem[0];
-                                    obj['fillKey'] = csvElem[1];
-                                    obj['name'] = csvElem[2];
-                                    obj['latitude'] = csvElem[3];
-                                    obj['longitude'] = csvElem[4];
-                                    return obj;
-                                });
-                                if (this._geobackup) {
-                                    for (var i=0; i<newCsv.length; i++) {
-                                        for (var prop in newCsv[i]) {
-                                            if (newCsv[i].hasOwnProperty(prop)) {
-                                                if (newCsv[i][prop] != this._geobackup[i][prop]){
-                                                    changes = true;
-                                                    this._geobackup = newCsv;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                else {
-                                    this._geobackup = newCsv;
-                                    changes = true;
-                                }
-                                if (changes) {
-                                    socket.emit('poll-server', {geo: true, changes: newCsv});
-                                }
-
-                            });
+                csv = csv.map(function(csv) {
+                    var obj = {};
+                    obj['radius'] = 15;
+                    obj['size'] = csv[0];
+                    obj['fillKey'] = csv[1];
+                    obj['name'] = csv[2];
+                    obj['latitude'] = csv[3];
+                    obj['longitude'] = csv[4];
+                    return obj;
                 });
+                socket.emit('poll-server', {geo: true, changes: csv});
             });
     }
     _updateIssuesJson(socket) {
@@ -189,7 +156,7 @@ export default class Server {
         fs.writeFile(ISSUES_JSON, JSON.stringify(issuesFile, null, 2), (err) => {
             if (err) console.log(err);
         });
-        socket.emit('poll-server', {issues: true});
+        socket.emit('poll-server', {issues: true, changes: issuesFile});
     }
     _rand(min=0, max=5) {
         return Math.round(Math.random() * (max - min) + min);

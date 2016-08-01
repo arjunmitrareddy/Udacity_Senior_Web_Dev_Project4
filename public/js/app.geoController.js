@@ -7,20 +7,17 @@
     angular.module('corpdash')
         .controller('geoController', geoController);
 
-    geoController.$inject = ['serviceConnectorFactory', '$q', '$state', '$rootScope', '$timeout'];
+    geoController.$inject = ['serviceConnectorFactory', '$q', '$state', '$rootScope', '$window', '$scope'];
 
-    function geoController(serviceConnectorFactory, $q, $state, $rootScope, $timeout) {
+    function geoController(serviceConnectorFactory, $q, $state, $rootScope, $window, $scope) {
         var gCtrl = this;
-        $timeout(function() {
-            $rootScope.socket.emit('poll-client-geo');
-        }, 4000);
+        $rootScope.socket.emit('poll-client-geo');
         function adjustView() {
             var defer = $q.defer();
             var $viewField =  $('#viewField');
             $viewField.hasClass('container-fluid') ? $viewField.removeClass('container-fluid') : (($viewField).hasClass('container') ? '' : $viewField.addClass('container'));
             $('.navstate').each(function(index, a) {
                 if (a.innerHTML == 'Geospatial View') {
-                    console.log($(a).parent());
                     $(a).parent().addClass('active');
                 }
                 else {
@@ -31,11 +28,12 @@
             return defer.promise;
         }
         adjustView().then(setGeoData());
+        gCtrl.circles = null;
         function setGeoData(fromSocket) {
-            $('#container').empty();
-            var bombMap = new Datamap({
-                element: document.getElementById('container'),
+            gCtrl.geoMapOptions = {
+                element: null,
                 scope: 'world',
+                responsive: true,
                 geographyConfig: {
                     popupOnHover: true,
                     highlightOnHover: true
@@ -74,39 +72,30 @@
                     'MDG': {fillKey: 'MDG'}
 
                 }
-            });
-            if (fromSocket) {
-                var circles = fromSocket;
-                bombMap.bubbles(circles, {
-                    popupTemplate: function (geo, data) {
-                        return ['<div class="hoverinfo">' +  data.name + " </br> " + data.size + " Thousand Employees" + '</div>'];
+            };
+            console.log(gCtrl.circles);
+            if (fromSocket) { //data from socket
+                if (!gCtrl.circles) {  // if circles is null
+                    gCtrl.circles = fromSocket;
+                    $scope.$apply();
+                }
+                if (gCtrl.circles) { //if circles not null
+                    for (var i=0; i<fromSocket.length; i++) {
+                        if (!_.isEqual(gCtrl.circles[i], fromSocket[i])) {  //checking for changes in data and update if changes found
+                            gCtrl.circles = fromSocket;
+                            $scope.$apply();
+                        }
                     }
-                });
-                return;
+
+                }
             }
-            serviceConnectorFactory.get('/csv/geo.csv').then(function(data) {
-                var circles = $.csv.toArrays(data).map(function(csv) {
-                    var obj = {};
-                    obj['radius'] = 15;
-                    obj['size'] = csv[0];
-                    obj['fillKey'] = csv[1];
-                    obj['name'] = csv[2];
-                    obj['latitude'] = csv[3];
-                    obj['longitude'] = csv[4];
-                    return obj;
-                });
-                bombMap.bubbles(circles, {
-                    popupTemplate: function (geo, data) {
-                        return ['<div class="hoverinfo">' +  data.name + " </br> " + data.size + " Thousand Employees" + '</div>'];
-                    }
-                });
-            })
         }
-        $(window).resize(function() {
-            setGeoData(false);
+        gCtrl.resize = false;
+        angular.element($window).bind('resize', function() {
+            gCtrl.resize = !gCtrl.resize;
+            $scope.$apply();
         });
         $rootScope.socket.on('poll-server', function(data) {
-            console.log(data);
             if (data.geo && $state.current.name == 'geoview' && data.changes) {
                 setGeoData(data.changes);
             }

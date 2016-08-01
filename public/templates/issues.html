@@ -38,7 +38,7 @@
         </div>
         <div class="filterBrkpt">
             <button ng-if="iCtrl.sortSet && iCtrl.brkpt" ng-click="iCtrl.clearFilter()" type="button" class="btn">
-                Clear Sorts
+                Clear Sorts <span class="glyphicon glyphicon-remove"></span>
             </button>
         </div>
     </div>
@@ -48,26 +48,26 @@
     <div class="col-xs-12 col-sm-12 geoRow">
         <div class="filterBtn">
             <button ng-click="iCtrl.filter('a', issues)" type="button" class="btn">
-                Open Issues
+                Open Issues <span ng-if="iCtrl.filterSet == 'a'" class="glyphicon glyphicon-ok-sign"></span>
             </button>
         </div>
         <div class="filterBtn">
             <button ng-click="iCtrl.filter('b', issues)" type="button" class="btn">
-                Closed Issues
+                Closed Issues <span ng-if="iCtrl.filterSet == 'b'" class="glyphicon glyphicon-ok-sign"></span>
             </button>
         </div>
         <div class="filterBtn">
             <button ng-click="iCtrl.filter('c', issues)" type="button" class="btn">
-                Latest
+                Latest <span ng-if="iCtrl.filterSet == 'c'" class="glyphicon glyphicon-ok-sign"></span>
             </button>
         </div>
         <div class="filterBtn">
             <button ng-click="iCtrl.clearF()" ng-if="iCtrl.filterSet" type="button" class="btn">
-                Clear Filter
+                Clear Filter <span class="glyphicon glyphicon-remove"></span>
             </button>
         </div>
     </div>
-    <div class="filterBrkpt"><button ng-if="iCtrl.sortSet && !iCtrl.brkpt" ng-click="iCtrl.clearFilter()" type="button" class="btn">Clear Sorts</button></div>
+    <div class="filterBrkpt"><button ng-if="iCtrl.sortSet && !iCtrl.brkpt" ng-click="iCtrl.clearFilter()" type="button" class="btn">Clear Sorts <span class="glyphicon glyphicon-remove"></span></button></div>
     <div class="col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-10 col-sm-10 col-md-10 col-lg-10 geoRow">
             <table class="route-table rwd-table table">
                 <tr>

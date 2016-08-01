@@ -10,33 +10,51 @@ svg {
 .geoTitle {
    font-size: 15px;
 }
+geo-map {
+   height: 100%;
+}
+.mapContainer {
+   height: 100%;
+}
 @media screen and (max-width: 767px) {
-   .mapContainer {
-      position: relative;
-      top: 10%;
+   .datamap {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: -15%;
+      left: 0%;
    }
 }
 
 /* sm */
 @media screen and (min-width: 768px) {
-   .mapContainer {
-      position: relative;
-      top: 15%;
+   .datamap {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: -15%;
+      left: 0%;
    }
 }
 
 /* md */
 @media screen and (min-width: 992px) {
-   .mapContainer {
-      position: relative;
-      top: 20%;
+   .datamap {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: -15%;
+      left: 0%;
    }
 }
 
 /* lg */
 @media screen and (min-width: 1200px) {
-   .mapContainer {
-      position: relative;
-      top: 30%;
+   .datamap {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: -15%;
+      left: 0%;
    }
 }
