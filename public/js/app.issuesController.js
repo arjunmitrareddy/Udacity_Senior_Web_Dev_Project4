@@ -1,35 +1,22 @@
-/**
- * Created by arjunMitraReddy on 7/28/2016.
- */
-
 (function() {
     "use strict";
     angular.module('corpdash')
         .controller('issuesController', issuesController);
 
-    issuesController.$inject = ['$state', '$rootScope', 'serviceConnectorFactory'];
+    issuesController.$inject = ['$state', '$rootScope', 'serviceConnectorFactory', '$timeout', '$scope', '$window'];
 
-    function issuesController($state, $rootScope, serviceConnectorFactory) {
+    function issuesController($state, $rootScope, serviceConnectorFactory, $timeout, $scope, $window) {
         var iCtrl = this;
+        $timeout(function() {
+            $rootScope.socket.emit('poll-client-issues');
+        }, 4000);
         var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-        if (width <= 992) {
-            iCtrl.brkpt = true;
-            $('#filtersBox').show();
-        }
-        else {
-            iCtrl.brkpt = false;
-            $('#filtersBox').hide();
-        }
-        $(window).resize(function() {
-            width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
-            if (width <= 992) {
-                iCtrl.brkpt = true;
-                $('#filtersBox').show();
-            }
-            else {
-                iCtrl.brkpt = false;
-                $('#filtersBox').hide();
-            }
+        iCtrl.brkpt = (width <= 992);
+        angular.element($window).bind('resize', function() {
+            var w = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+            iCtrl.brkpt = (w <= 992);
+            console.log(iCtrl.brkpt);
+            $scope.$apply();
         });
 
         function adjustView() {
@@ -55,9 +42,14 @@
                         return issue;
                     });
                     iCtrl.backup = angular.copy(arr);
-                    if (iCtrl.sortSet) {
-                        console.log(iCtrl.sortSet);
+                    if (iCtrl.sortSet && !iCtrl.filterSet) {
                         $rootScope.issues = iCtrl.sort(iCtrl.sortSet, arr, false)
+                    }
+                    else if (!iCtrl.sortSet && iCtrl.filterSet) {
+                        $rootScope.issues = iCtrl.filter(iCtrl.filterSet, arr)
+                    }
+                    else if (iCtrl.sortSet && iCtrl.filterSet) {
+                        $rootScope.issues = iCtrl.sort(iCtrl.sortSet, iCtrl.filter(iCtrl.filterSet, arr), false);
                     }
                     else {
                         $rootScope.setIssues(arr);
@@ -72,6 +64,25 @@
         iCtrl.e = false;
         iCtrl.f = false;
         iCtrl.g = false;
+        iCtrl.filter = function(filter, issues) {
+            switch (filter) {
+                case "a":
+                    iCtrl.filterSet = "a";
+                    $rootScope.issues = _.filter(issues, function(issue) {return issue.status == false});
+                    return $rootScope.issues;
+                case "b":
+                    iCtrl.filterSet = "b";
+                    $rootScope.issues = _.filter(issues, function(issue) {return issue.status == true});
+                    return $rootScope.issues;
+                case "c":
+                    iCtrl.filterSet = "c";
+                    $rootScope.issues = _.filter(issues, function(issue) {
+                        var yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).getTime();
+                        return issue.stimestamp > (yesterday);
+                    });
+                    return $rootScope.issues;
+            }
+        };
         iCtrl.sort = function(sort, issues, toggler) {
             switch (sort) {
                 case "a":
@@ -134,6 +145,10 @@
             iCtrl.e = false;
             iCtrl.f = false;
             iCtrl.g = false;
+            $rootScope.issues = angular.copy(iCtrl.backup);
+        };
+        iCtrl.clearF = function() {
+            iCtrl.filterSet = null;
             $rootScope.issues = angular.copy(iCtrl.backup);
         }
     }

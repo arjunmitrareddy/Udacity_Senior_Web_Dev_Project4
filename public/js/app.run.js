@@ -27,9 +27,6 @@
         };
         showIssues();
         $rootScope.socket = io.connect(location.protocol + "//" + location.host);
-        $rootScope.socket.emit('poll-client-metrics');
-        $rootScope.socket.emit('poll-client-geo');
-        $rootScope.socket.emit('poll-client-issues');
     }
 
 

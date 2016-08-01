@@ -7,10 +7,13 @@
     angular.module('corpdash')
         .controller('geoController', geoController);
 
-    geoController.$inject = ['serviceConnectorFactory', '$q', '$state', '$rootScope'];
+    geoController.$inject = ['serviceConnectorFactory', '$q', '$state', '$rootScope', '$timeout'];
 
-    function geoController(serviceConnectorFactory, $q, $state, $rootScope) {
+    function geoController(serviceConnectorFactory, $q, $state, $rootScope, $timeout) {
         var gCtrl = this;
+        $timeout(function() {
+            $rootScope.socket.emit('poll-client-geo');
+        }, 4000);
         function adjustView() {
             var defer = $q.defer();
             var $viewField =  $('#viewField');
@@ -27,8 +30,8 @@
             defer.resolve();
             return defer.promise;
         }
-        adjustView().then(getGeoData());
-        function getGeoData(fromSocket) {
+        adjustView().then(setGeoData());
+        function setGeoData(fromSocket) {
             $('#container').empty();
             var bombMap = new Datamap({
                 element: document.getElementById('container'),
@@ -73,18 +76,10 @@
                 }
             });
             if (fromSocket) {
-                var circles = $.csv.toArrays(fromSocket).map(function(csv) {
-                    var obj = {};
-                    obj['radius'] = csv[0];
-                    obj['fillKey'] = csv[1];
-                    obj['name'] = csv[2];
-                    obj['latitude'] = csv[3];
-                    obj['longitude'] = csv[4];
-                    return obj;
-                });
+                var circles = fromSocket;
                 bombMap.bubbles(circles, {
                     popupTemplate: function (geo, data) {
-                        return ['<div class="hoverinfo">' +  data.name + " </br> " + data.radius + " Thousand Employees" + '</div>'];
+                        return ['<div class="hoverinfo">' +  data.name + " </br> " + data.size + " Thousand Employees" + '</div>'];
                     }
                 });
                 return;
@@ -92,7 +87,8 @@
             serviceConnectorFactory.get('/csv/geo.csv').then(function(data) {
                 var circles = $.csv.toArrays(data).map(function(csv) {
                     var obj = {};
-                    obj['radius'] = csv[0];
+                    obj['radius'] = 15;
+                    obj['size'] = csv[0];
                     obj['fillKey'] = csv[1];
                     obj['name'] = csv[2];
                     obj['latitude'] = csv[3];
@@ -101,19 +97,18 @@
                 });
                 bombMap.bubbles(circles, {
                     popupTemplate: function (geo, data) {
-                        return ['<div class="hoverinfo">' +  data.name + " </br> " + data.radius + " Thousand Employees" + '</div>'];
+                        return ['<div class="hoverinfo">' +  data.name + " </br> " + data.size + " Thousand Employees" + '</div>'];
                     }
                 });
             })
         }
         $(window).resize(function() {
-            getGeoData(false);
+            setGeoData(false);
         });
         $rootScope.socket.on('poll-server', function(data) {
-            if (data.geo && $state.current.name == 'geoview') {
-                serviceConnectorFactory.get('/csv/geo.csv').then(function (data) {
-                    getGeoData(data);
-                });
+            console.log(data);
+            if (data.geo && $state.current.name == 'geoview' && data.changes) {
+                setGeoData(data.changes);
             }
         });
     }

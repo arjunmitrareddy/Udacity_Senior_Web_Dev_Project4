@@ -1,5 +1,5 @@
-<div class="row geoRow" id="filtersBox">
-    Filters:
+<div class="row geoRow" id="filtersBox" ng-if="iCtrl.brkpt">
+    Sorts:
     <div class="col-xs-12 col-sm-12 geoRow">
         <div class="filterBrkpt">
             <button ng-click="iCtrl.sort('a', issues, true)" type="button" class="btn">
@@ -38,13 +38,36 @@
         </div>
         <div class="filterBrkpt">
             <button ng-if="iCtrl.sortSet && iCtrl.brkpt" ng-click="iCtrl.clearFilter()" type="button" class="btn">
-                Clear Filter
+                Clear Sorts
             </button>
         </div>
     </div>
 </div>
 <div class="row geoRow">
-    <div class="filterBrkpt"><button ng-if="iCtrl.sortSet && !iCtrl.brkpt" ng-click="iCtrl.clearFilter()" type="button" class="btn">Clear Filter</button></div>
+    Filters:
+    <div class="col-xs-12 col-sm-12 geoRow">
+        <div class="filterBtn">
+            <button ng-click="iCtrl.filter('a', issues)" type="button" class="btn">
+                Open Issues
+            </button>
+        </div>
+        <div class="filterBtn">
+            <button ng-click="iCtrl.filter('b', issues)" type="button" class="btn">
+                Closed Issues
+            </button>
+        </div>
+        <div class="filterBtn">
+            <button ng-click="iCtrl.filter('c', issues)" type="button" class="btn">
+                Latest
+            </button>
+        </div>
+        <div class="filterBtn">
+            <button ng-click="iCtrl.clearF()" ng-if="iCtrl.filterSet" type="button" class="btn">
+                Clear Filter
+            </button>
+        </div>
+    </div>
+    <div class="filterBrkpt"><button ng-if="iCtrl.sortSet && !iCtrl.brkpt" ng-click="iCtrl.clearFilter()" type="button" class="btn">Clear Sorts</button></div>
     <div class="col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1 col-xs-10 col-sm-10 col-md-10 col-lg-10 geoRow">
             <table class="route-table rwd-table table">
                 <tr>

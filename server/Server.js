@@ -33,6 +33,7 @@ export default class Server {
         this._app = express();
         this._port = port;
         this._appServerUp = false;
+        this._geobackup = null;
         this._appServer = http.createServer(this._app);
         this._sio = socketio.listen(this._appServer);
         this._app.use(bodyParser.urlencoded({ extended: true }));
@@ -120,17 +121,55 @@ export default class Server {
     }
     _updateGeoCsv(socket) {
         var csv = [];
+        var changes = false;
         fastcsv
             .fromPath(GEO_CSV)
             .on("data", (data) => {
-                data[0] = (parseInt(data[0]) > 30) ? data[0] : (parseInt(data[0]) + 1).toString();
+                data[0] = (parseInt(data[0]) + 1).toString();
                 csv.push(data);
             })
             .on("end", () => {
                 fastcsv
                     .writeToPath(GEO_CSV, csv, {headers: true})
                     .on('finish', () => {
-                        socket.emit('poll-server', {geo: true});
+                        var newCsv = [];
+                        fastcsv
+                            .fromPath(GEO_CSV)
+                            .on("data", (data) => {
+                                newCsv.push(data);
+                            })
+                            .on("finish", () => {
+                                newCsv = newCsv.map((csvElem) => {
+                                    var obj = {};
+                                    obj['radius'] = 15;
+                                    obj['size'] = csvElem[0];
+                                    obj['fillKey'] = csvElem[1];
+                                    obj['name'] = csvElem[2];
+                                    obj['latitude'] = csvElem[3];
+                                    obj['longitude'] = csvElem[4];
+                                    return obj;
+                                });
+                                if (this._geobackup) {
+                                    for (var i=0; i<newCsv.length; i++) {
+                                        for (var prop in newCsv[i]) {
+                                            if (newCsv[i].hasOwnProperty(prop)) {
+                                                if (newCsv[i][prop] != this._geobackup[i][prop]){
+                                                    changes = true;
+                                                    this._geobackup = newCsv;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                else {
+                                    this._geobackup = newCsv;
+                                    changes = true;
+                                }
+                                if (changes) {
+                                    socket.emit('poll-server', {geo: true, changes: newCsv});
+                                }
+
+                            });
                 });
             });
     }

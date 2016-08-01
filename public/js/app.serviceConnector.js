@@ -1,6 +1,3 @@
-/**
- * Created by arjunMitraReddy on 7/17/2016.
- */
 (function () {
     'use strict';
 
@@ -18,11 +15,17 @@
         };
         function getHandler(url, config) {
             return $http.get(url, config)
-                .then(function(response) { return response.data});
+                .then(function(response) { return response.data})
+                .catch(function(err) {
+                    throw err;
+                });
         }
         function postHandler(url, payload) {
             return $http.post(url, payload)
-                .then(function(response) { return response.data});
+                .then(function(response) { return response.data})
+                .catch(function (err) {
+                    throw err;
+                });
         }
     }
 })();

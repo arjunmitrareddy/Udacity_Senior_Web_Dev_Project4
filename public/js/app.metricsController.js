@@ -7,10 +7,13 @@
     angular.module('corpdash')
         .controller('metricsController', metricsController);
 
-    metricsController.$inject = ['$q', 'serviceConnectorFactory', '$state', '$rootScope'];
+    metricsController.$inject = ['$q', 'serviceConnectorFactory', '$state', '$rootScope', '$timeout'];
 
-    function metricsController($q, serviceConnectorFactory, $state, $rootScope) {
+    function metricsController($q, serviceConnectorFactory, $state, $rootScope, $timeout) {
         var mCtrl = this;
+        $timeout(function() {
+            $rootScope.socket.emit('poll-client-metrics');
+        }, 4000);
         mCtrl.switchToIssues = function() {
             $state.go('issues');
         };
@@ -33,41 +36,37 @@
         }
 
         adjustView().then(lineChart).then(barChart);
+
         function lineChart() {
             var defer = $q.defer();
-            var newh = $("#lineGraphBox").height();
-
-            $(window).resize(function () {
-                newh = $("#lineGraphBox").height();
-                chart1.redraw();
-                chart1.reflow();
-            });
             serviceConnectorFactory.get('/json/customers.json').then(function (data) {
-                chart1 = new Highcharts.Chart({
-                    chart: {
-                        renderTo: 'lineGraph'
-                    },
-                    title: {
-                        text: 'Paying Customers Over the Years (Live)'
-                    },
-                    xAxis: {
-                        categories: data.years
-                    },
-                    yAxis: {
+                mCtrl.lineChartData = data;
+                mCtrl.lineChart = {
+                    options: {
+                        chart: {
+                            renderTo: 'lineGraph'
+                        },
                         title: {
-                            text: 'Customers (In Thousands)'
+                            text: 'Paying Customers Over the Years (Live)'
+                        },
+                        xAxis: {
+                            categories: mCtrl.lineChartData ? mCtrl.lineChartData.years : []
+                        },
+                        yAxis: {
+                            title: {
+                                text: 'Customers (In Thousands)'
+                            }
+                        },
+                        series: [{
+                            name: 'Customers',
+                            data: mCtrl.lineChartData ? mCtrl.lineChartData.customers : []
+                        }],
+
+                        credits: {
+                            enabled: false
                         }
-                    },
-
-                    series: [{
-                        name: 'Customers',
-                        data: data.customers
-                    }],
-
-                    credits: {
-                        enabled: false
                     }
-                });
+                };
             });
             defer.resolve();
             return defer.promise;
@@ -76,47 +75,38 @@
         function barChart() {
             var defer = $q.defer();
             serviceConnectorFactory.get('/json/reportedIssues.json').then(function (data) {
-                chart2 = new Highcharts.Chart({
-                    chart: {
-                        renderTo: 'barGraphBox',
-                        type: 'column'
-                    },
-                    title: {
-                        text: 'Reported Issues Status (Live)'
-                    },
-                    xAxis: {
-                        categories: data.years
-                    },
-                    yAxis: {
+                mCtrl.barChartData = data;
+                mCtrl.barChart = {
+                    options: {
+                        chart: {
+                            renderTo: 'barGraphBox',
+                            type: 'column'
+                        },
                         title: {
-                            text: 'Issues Reported (In Hundreds)'
+                            text: 'Reported Issues Status (Live)'
+                        },
+                        xAxis: {
+                            categories: mCtrl.barChartData ? mCtrl.barChartData.years : []
+                        },
+                        yAxis: {
+                            title: {
+                                text: 'Issues Reported (In Hundreds)'
+                            }
+                        },
+                        series: mCtrl.barChartData ? mCtrl.barChartData.issues : [],
+                        credits: {
+                            enabled: false
                         }
-                    },
-                    series: data.issues,
-                    credits: {
-                        enabled: false
                     }
-                });
+                };
             });
             defer.resolve();
             return defer.promise;
         }
         $rootScope.socket.on('poll-server', function(data) {
                 if (data.metrics && $state.current.name == 'metrics') {
-                    serviceConnectorFactory.get('/json/customers.json').then(function (data) {
-                        var obj = {
-                            name: 'Customers',
-                            data: data.customers
-                        };
-                        chart1.series[0].setData(data.customers,true);
-                    });
-
-                    serviceConnectorFactory.get('/json/reportedIssues.json').then(function(data) {
-                        console.log(data.issues);
-                        for (var i=0; i<chart2.series.length; i++) {
-                            chart2.series[i].setData(data.issues[i].data, true)
-                        }
-                    })
+                    lineChart();
+                    barChart();
                 }
         });
     }
