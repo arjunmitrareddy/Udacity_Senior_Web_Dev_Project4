@@ -22,7 +22,7 @@ events.EventEmitter.prototype._maxListeners = 100;
 const compressor = compression({
     flush: zlib.Z_PARTIAL_FLUSH
 });
-const FETCH_INTERVAL = 500;
+const FETCH_INTERVAL = 3000;
 const GEO_CSV = '../public/csv/geo.csv';
 const CUSTOMERS_JSON = '../public/json/customers.json';
 const REPORTS_JSON = '../public/json/reportedIssues.json';
@@ -100,7 +100,7 @@ export default class Server {
         });
     }
     _updateMetricsJson(socket) {
-        /*customersFile.customers[customersFile.customers.length - 1] = (customersFile.customers[customersFile.customers.length - 1] > 1500) ? customersFile.customers[customersFile.customers.length - 1] : customersFile.customers[customersFile.customers.length - 1]+ this._rand(1, 10);
+        customersFile.customers[customersFile.customers.length - 1] = (customersFile.customers[customersFile.customers.length - 1] > 1500) ? customersFile.customers[customersFile.customers.length - 1] : customersFile.customers[customersFile.customers.length - 1]+ this._rand(1, 10);
         for (var i=0; i<reportsFile.issues.length; i++) {
             for (var j=0; j<reportsFile.issues[i].data.length; j++) {
                 if (i == reportsFile.issues.length -1) {
@@ -113,38 +113,74 @@ export default class Server {
         }
         fs.writeFile(CUSTOMERS_JSON, JSON.stringify(customersFile, null, 2), (err) => {
             if (err) console.log(err);
+            fs.writeFile(REPORTS_JSON, JSON.stringify(reportsFile, null, 2), (err) => {
+                if (err) console.log(err);
+                fs.readFile(REPORTS_JSON, 'utf-8', function(err, data) {
+                    var reports = JSON.parse(data);
+                    fs.readFile(CUSTOMERS_JSON, 'utf-8', function(err, data) {
+                        var customers = JSON.parse(data);
+                        socket.emit('poll-server', {metrics: true, changesReport: reports, changesCustomer: customers});
+                    })
+                });
+            });
         });
-        fs.writeFile(REPORTS_JSON, JSON.stringify(reportsFile, null, 2), (err) => {
-            if (err) console.log(err);
-        });*/
-        fs.readFile(REPORTS_JSON, 'utf-8', function(err, data) {
-            var reports = JSON.parse(data);
-            fs.readFile(CUSTOMERS_JSON, 'utf-8', function(err, data) {
-                var customers = JSON.parse(data);
-                socket.emit('poll-server', {metrics: true, changesReport: reports, changesCustomer: customers});
-            })
-        });
+
+
+
 
     }
     _updateGeoCsv(socket) {
         var csv = [];
+        var changes = false;
         fastcsv
             .fromPath(GEO_CSV)
             .on("data", (data) => {
+                data[0] = (parseInt(data[0]) + this._rand(0, 1)).toString();
                 csv.push(data);
             })
             .on("end", () => {
-                csv = csv.map(function(csv) {
-                    var obj = {};
-                    obj['radius'] = 15;
-                    obj['size'] = csv[0];
-                    obj['fillKey'] = csv[1];
-                    obj['name'] = csv[2];
-                    obj['latitude'] = csv[3];
-                    obj['longitude'] = csv[4];
-                    return obj;
-                });
-                socket.emit('poll-server', {geo: true, changes: csv});
+                fastcsv
+                    .writeToPath(GEO_CSV, csv, {headers: true})
+                    .on('finish', () => {
+                        var newCsv = [];
+                        fastcsv
+                            .fromPath(GEO_CSV)
+                            .on("data", (data) => {
+                                newCsv.push(data);
+                            })
+                            .on("finish", () => {
+                                newCsv = newCsv.map((csvElem) => {
+                                    var obj = {};
+                                    obj['radius'] = 15;
+                                    obj['size'] = csvElem[0];
+                                    obj['fillKey'] = csvElem[1];
+                                    obj['name'] = csvElem[2];
+                                    obj['latitude'] = csvElem[3];
+                                    obj['longitude'] = csvElem[4];
+                                    return obj;
+                                });
+                                if (this._geobackup) {
+                                    for (var i=0; i<newCsv.length; i++) {
+                                        for (var prop in newCsv[i]) {
+                                            if (newCsv[i].hasOwnProperty(prop)) {
+                                                if (newCsv[i][prop] != this._geobackup[i][prop]){
+                                                    changes = true;
+                                                    this._geobackup = newCsv;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                else {
+                                    this._geobackup = newCsv;
+                                    changes = true;
+                                }
+                                if (changes) {
+                                    socket.emit('poll-server', {geo: true, changes: newCsv});
+                                }
+
+                            });
+                    });
             });
     }
     _updateIssuesJson(socket) {
