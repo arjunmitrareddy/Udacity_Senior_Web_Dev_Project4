@@ -120,6 +120,7 @@ gulp.task('refresh', (callback) => {
 
 gulp.task('heroku', (callback) => {
     runSequence('clean', 'css', 'wire-dep', 'copy', 'babelify-client', 'cache-templates', 'babelify-server', callback);
+    
 });
 
 gulp.task('serve', (callback) => {
