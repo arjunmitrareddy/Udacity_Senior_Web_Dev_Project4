@@ -57,7 +57,7 @@
                         },
                         series: [{
                             name: 'Customers',
-                            data: mCtrl.lineChartData ? mCtrl.lineChartData.customers : []
+                            data: (mCtrl.lineChartData) ? mCtrl.lineChartData.customers.slice(0, mCtrl.lineChartData.years.length) : []
                         }],
 
                         credits: {
@@ -73,6 +73,17 @@
         function barChart(data) {
             var defer = $q.defer();
                 mCtrl.barChartData = data;
+                if (mCtrl.barChartData) {
+                    mCtrl.barChartData.issues = mCtrl.barChartData.issues.map(function(issue) {
+                        var arr = issue.data.slice(0, mCtrl.barChartData.years.length);
+                        var obj = {
+                            name: issue.name,
+                            data: arr
+                        };
+                        return obj;
+                    })
+                }
+                console.log(mCtrl.barChartData);
                 mCtrl.barChart = {
                     options: {
                         chart: {
@@ -90,7 +101,7 @@
                                 text: 'Issues Reported (In Hundreds)'
                             }
                         },
-                        series: mCtrl.barChartData ? mCtrl.barChartData.issues : [],
+                        series: mCtrl.barChartData ? mCtrl.barChartData.issues.slice(0, mCtrl.barChartData.years.length) : [],
                         credits: {
                             enabled: false
                         }

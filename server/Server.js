@@ -22,7 +22,7 @@ events.EventEmitter.prototype._maxListeners = 100;
 const compressor = compression({
     flush: zlib.Z_PARTIAL_FLUSH
 });
-const FETCH_INTERVAL = 1000;
+const FETCH_INTERVAL = 500;
 const GEO_CSV = '../public/csv/geo.csv';
 const CUSTOMERS_JSON = '../public/json/customers.json';
 const REPORTS_JSON = '../public/json/reportedIssues.json';

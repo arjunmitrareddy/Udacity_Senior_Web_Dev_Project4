@@ -77,16 +77,23 @@
             if (fromSocket) { //data from socket
                 if (!gCtrl.circles) {  // if circles is null
                     gCtrl.circles = fromSocket;
+                 //   console.log(gCtrl.circles);
                     $scope.$apply();
                 }
                 if (gCtrl.circles) { //if circles not null
-                    for (var i=0; i<fromSocket.length; i++) {
-                        if (!_.isEqual(gCtrl.circles[i], fromSocket[i])) {  //checking for changes in data and update if changes found
-                            gCtrl.circles = fromSocket;
-                            $scope.$apply();
+                   // console.log(gCtrl.circles);
+                    if (gCtrl.circles.length == fromSocket.length) {
+                        for (var i = 0; i < fromSocket.length; i++) {
+                            if (!_.isEqual(gCtrl.circles[i], fromSocket[i])) {  //checking for changes in data and update if changes found
+                                gCtrl.circles = fromSocket;
+                                $scope.$apply();
+                            }
                         }
                     }
-
+                    else {
+                        gCtrl.circles = fromSocket;
+                        $scope.$apply();
+                    }
                 }
             }
         }
@@ -99,6 +106,7 @@
             if (data.geo && $state.current.name == 'geoview' && data.changes) {
                 setGeoData(data.changes);
             }
+
         });
     }
 })();
