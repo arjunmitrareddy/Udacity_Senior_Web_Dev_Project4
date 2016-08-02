@@ -22,7 +22,7 @@ events.EventEmitter.prototype._maxListeners = 100;
 const compressor = compression({
     flush: zlib.Z_PARTIAL_FLUSH
 });
-const FETCH_INTERVAL = 5000;
+const FETCH_INTERVAL = 1000;
 const GEO_CSV = '../public/csv/geo.csv';
 const CUSTOMERS_JSON = '../public/json/customers.json';
 const REPORTS_JSON = '../public/json/reportedIssues.json';
@@ -100,7 +100,7 @@ export default class Server {
         });
     }
     _updateMetricsJson(socket) {
-        customersFile.customers[customersFile.customers.length - 1] = (customersFile.customers[customersFile.customers.length - 1] > 1500) ? customersFile.customers[customersFile.customers.length - 1] : customersFile.customers[customersFile.customers.length - 1]+ this._rand(1, 10);
+        /*customersFile.customers[customersFile.customers.length - 1] = (customersFile.customers[customersFile.customers.length - 1] > 1500) ? customersFile.customers[customersFile.customers.length - 1] : customersFile.customers[customersFile.customers.length - 1]+ this._rand(1, 10);
         for (var i=0; i<reportsFile.issues.length; i++) {
             for (var j=0; j<reportsFile.issues[i].data.length; j++) {
                 if (i == reportsFile.issues.length -1) {
@@ -116,8 +116,15 @@ export default class Server {
         });
         fs.writeFile(REPORTS_JSON, JSON.stringify(reportsFile, null, 2), (err) => {
             if (err) console.log(err);
+        });*/
+        fs.readFile(REPORTS_JSON, 'utf-8', function(err, data) {
+            var reports = JSON.parse(data);
+            fs.readFile(CUSTOMERS_JSON, 'utf-8', function(err, data) {
+                var customers = JSON.parse(data);
+                socket.emit('poll-server', {metrics: true, changesReport: reports, changesCustomer: customers});
+            })
         });
-        socket.emit('poll-server', {metrics: true, changesReport: reportsFile, changesCustomer: customersFile});
+
     }
     _updateGeoCsv(socket) {
         var csv = [];

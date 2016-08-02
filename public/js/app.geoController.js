@@ -7,9 +7,10 @@
     angular.module('corpdash')
         .controller('geoController', geoController);
 
-    geoController.$inject = ['serviceConnectorFactory', '$q', '$state', '$rootScope', '$window', '$scope'];
+    geoController.$inject = ['$q', '$state', '$rootScope', '$window', '$scope'];
 
-    function geoController(serviceConnectorFactory, $q, $state, $rootScope, $window, $scope) {
+    function geoController($q, $state, $rootScope, $window, $scope) {
+        $rootScope.clear();
         var gCtrl = this;
         $rootScope.socket.emit('poll-client-geo');
         function adjustView() {
@@ -73,7 +74,6 @@
 
                 }
             };
-            console.log(gCtrl.circles);
             if (fromSocket) { //data from socket
                 if (!gCtrl.circles) {  // if circles is null
                     gCtrl.circles = fromSocket;

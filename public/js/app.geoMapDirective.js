@@ -23,15 +23,17 @@
 
                 });
                 attrs.$observe('circles', function(value) {
-                    scope.bubbles = JSON.parse(value);
-                    scope.map.bubbles(scope.bubbles, {
-                        popupTemplate: function (geo, data) {
-                            return ['<div class="hoverinfo">' +  data.name + " </br> " + data.size + " Thousand Employees" + '</div>'];
-                        }
-                    })
+                    try {
+                        scope.bubbles = JSON.parse(value);
+                        scope.map.bubbles(scope.bubbles, {
+                            popupTemplate: function (geo, data) {
+                                return ['<div class="hoverinfo">' +  data.name + " </br> " + data.size + " Thousand Employees" + '</div>'];
+                            }
+                        })
+                    }
+                    catch(e) {}
                 });
                 attrs.$observe('resize', function(value) {
-                    console.log(value);
                     scope.map.resize();
                 })
             }

@@ -3,11 +3,10 @@
     angular.module('corpdash')
         .controller('issuesController', issuesController);
 
-    issuesController.$inject = ['$state', '$rootScope', 'serviceConnectorFactory', '$timeout', '$scope', '$window'];
+    issuesController.$inject = ['$state', '$rootScope', '$scope', '$window'];
 
-    function issuesController($state, $rootScope, serviceConnectorFactory, $timeout, $scope, $window) {
+    function issuesController($state, $rootScope, $scope, $window) {
         var iCtrl = this;
-        $rootScope.socket.emit('poll-client-issues');
         var width = (window.innerWidth > 0) ? window.innerWidth : screen.width;
         iCtrl.brkpt = (width <= 992);
         angular.element($window).bind('resize', function() {
@@ -30,32 +29,31 @@
         }
         adjustView();
         $rootScope.socket.on('poll-server', function(data) {
-            if (data.issues && $state.current.name == 'issues' && data.changes) {
-                    var dataC = data.changes;
-                    var arr = dataC.map(function(issue) {
-                        var strArr = issue.description.split(" ");
-                        var sub = [strArr[0], strArr[1], strArr[2]].join(" ");
-                        issue.description = sub.toUpperCase();
-                        return issue;
-                    });
-                    iCtrl.backup = angular.copy(arr);
-                    if (iCtrl.sortSet && !iCtrl.filterSet) {
-                        $rootScope.issues = iCtrl.sort(iCtrl.sortSet, arr, false);
-                        $scope.$apply();
-                    }
-                    else if (!iCtrl.sortSet && iCtrl.filterSet) {
-                        $rootScope.issues = iCtrl.filter(iCtrl.filterSet, arr);
-                        $scope.$apply();
-                    }
-                    else if (iCtrl.sortSet && iCtrl.filterSet) {
-                        $rootScope.issues = iCtrl.sort(iCtrl.sortSet, iCtrl.filter(iCtrl.filterSet, arr), false);
-                        $scope.$apply();
-                    }
-                    else {
-                        console.log("here");
-                        $rootScope.issues = arr;
-                        $scope.$apply();
-                    }
+            if (data.issues && ($state.current.name == 'issues') && data.changes) {
+                var dataC = data.changes;
+                var arr = dataC.map(function(issue) {
+                    var strArr = issue.description.split(" ");
+                    var sub = [strArr[0], strArr[1], strArr[2]].join(" ");
+                    issue.description = sub.toUpperCase();
+                    return issue;
+                });
+                iCtrl.backup = angular.copy(arr);
+                if (iCtrl.sortSet && !iCtrl.filterSet) {
+                    $rootScope.issues = iCtrl.sort(iCtrl.sortSet, arr, false);
+                    $scope.$apply();
+                }
+                else if (!iCtrl.sortSet && iCtrl.filterSet) {
+                    $rootScope.issues = iCtrl.filter(iCtrl.filterSet, arr);
+                    $scope.$apply();
+                }
+                else if (iCtrl.sortSet && iCtrl.filterSet) {
+                    $rootScope.issues = iCtrl.sort(iCtrl.sortSet, iCtrl.filter(iCtrl.filterSet, arr), false);
+                    $scope.$apply();
+                }
+                else {
+                    $rootScope.issues = arr;
+                    $scope.$apply();
+                }
             }
         });
         iCtrl.a = false;
@@ -80,7 +78,7 @@
                     $rootScope.issues = _.filter(iCtrl.backup, function(issue) {
                         var yesterday = new Date(new Date().setDate(new Date().getDate() - 1)).getTime();
                         return issue.stimestamp > (yesterday);
-                    });
+                    }).reverse();
                     return $rootScope.issues;
             }
         };
@@ -137,6 +135,7 @@
 
             }
         };
+
         iCtrl.clearFilter = function() {
             iCtrl.sortSet = null;
             iCtrl.a = false;

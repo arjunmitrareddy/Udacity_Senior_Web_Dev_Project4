@@ -7,9 +7,10 @@
     angular.module('corpdash')
         .controller('metricsController', metricsController);
 
-    metricsController.$inject = ['$q', 'serviceConnectorFactory', '$state', '$rootScope', '$timeout', '$scope'];
+    metricsController.$inject = ['$q', '$state', '$rootScope', '$scope', '$timeout'];
 
-    function metricsController($q, serviceConnectorFactory, $state, $rootScope, $timeout, $scope) {
+    function metricsController($q, $state, $rootScope, $scope, $timeout) {
+        $rootScope.clear();
         var mCtrl = this;
         $rootScope.socket.emit('poll-client-metrics');
         mCtrl.switchToIssues = function() {
@@ -33,7 +34,7 @@
             return defer.promise;
         }
 
-        adjustView().then(lineChart).then(barChart);
+        adjustView();
 
         function lineChart(data) {
             var defer = $q.defer();
@@ -96,12 +97,14 @@
                     }
                 };
             $scope.$apply();
+            /*$timeout(function() {
+                $scope.$apply();
+            });*/
             defer.resolve();
             return defer.promise;
         }
         $rootScope.socket.on('poll-server', function(data) {
                 if (data.metrics && $state.current.name == 'metrics') {
-                    console.log(data);
                     lineChart(data.changesCustomer);
                     barChart(data.changesReport);
                 }

@@ -18,14 +18,20 @@
                 scope.data = null;
                 attrs.$observe('options', function(value) {
                     if (!scope.chart) {
-                        scope.data = JSON.parse(value);
-                        scope.chart = new Highcharts.Chart(scope.data);
+                        try {
+                            scope.data = JSON.parse(value);
+                            scope.chart = new Highcharts.Chart(scope.data);
+                        }
+                        catch(e) {}
                     }
                     else {
-                        scope.data = JSON.parse(value);
-                        for (var i=0; i<scope.chart.series.length; i++) {
-                            scope.chart.series[i].setData(scope.data.series[i].data, true)
+                        try {
+                            scope.data = JSON.parse(value);
+                            for (var i=0; i<scope.chart.series.length; i++) {
+                                scope.chart.series[i].setData(scope.data.series[i].data, true)
+                            }
                         }
+                        catch(e){}
                     }
 
                 });
