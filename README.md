@@ -1,8 +1,10 @@
 # Corporate Dashboard
-A Corporate Dashboard application, with Real-Time Updated data using Socket Programming. Application fetches data from CSV, JSON files which are modified on the server every few seconds and the modified data is updated on the Client via Sockets
+A Corporate Dashboard application, with Real-Time Updated data using Socket Programming. Application fetches data from CSV, JSON files which are modified on the server every few seconds and the modified data is updated on the Client via Sockets.
+The project has been in implemented in two frameworks - Angular, Ember
 
 ##[DEMO](https://dashboard-amr.herokuapp.com)
-
+##[DEMO (Ember)**] (https://dashboard-amr-ember.herokuapp.com/) 
+#####**Ember Version Currently Missing Live Updates
 ##Screenshots
 ### Geospatial View
 ![image](https://github.com/arjunmitrareddy/Udacity_Senior_Web_Dev_Project4/blob/master/screens/1.png)
@@ -15,7 +17,7 @@ A Corporate Dashboard application, with Real-Time Updated data using Socket Prog
 
 ##Technologies Used:
 - [ECMAScript 6](http://es6-features.org/)
-- [AngularJS v1.5.7](https://angularjs.org/)
+- [AngularJS v1.5.7](https://angularjs.org/), [EmberJS] (http://emberjs.com/)
 - [Node.js](https://nodejs.org/en/)
 - [Express](https://expressjs.com/)
 - [Gulp](http://gulpjs.com/)
