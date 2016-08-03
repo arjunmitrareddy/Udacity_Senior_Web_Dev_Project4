@@ -15,10 +15,6 @@
     "test",
     "tests"
   ],
-  "resolutions": {
-    "d3": "#~3.3.8",
-    "topojson": "#~1.4.3"
-  },
   "dependencies": {
     "angular": "^1.5.7",
     "jquery": "1.9.1",

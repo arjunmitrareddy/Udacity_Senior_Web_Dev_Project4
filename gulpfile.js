@@ -8,7 +8,6 @@ var wiredep = require('wiredep').stream;
 var del = require('del');
 var mergeStream = require('merge-stream');
 var args = process.argv.slice(3);
-var defer = require("gulp-defer");
 
 
 gulp.task('clean', () => {
