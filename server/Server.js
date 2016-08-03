@@ -55,14 +55,14 @@ export default class Server {
         })
     }
     _serveStaticFiles() {
-        this._app.use('/js', express.static('../public/js'));
-        this._app.use('/styles', express.static('../public/styles'));
-        this._app.use('/imgs', express.static('../public/imgs'));
-        this._app.use('/fonts', express.static('../public/fonts'));
-        this._app.use('/templates', express.static('../public/templates'));
-        this._app.use('/json', express.static('../public/json'));
-        this._app.use('/csv', express.static('../public/csv'));
-        this._app.use('/bower_components', express.static('../../bower_components'));
+        this._app.use('/js', express.static('../public/js', { maxAge: '1d' }));
+        this._app.use('/styles', express.static('../public/styles', { maxAge: '1d' }));
+        this._app.use('/imgs', express.static('../public/imgs', { maxAge: '1d' }));
+        this._app.use('/fonts', express.static('../public/fonts', { maxAge: '1d' }));
+        this._app.use('/templates', express.static('../public/templates', { maxAge: '1d' }));
+        this._app.use('/json', express.static('../public/json', { maxAge: '1d' }));
+        this._app.use('/csv', express.static('../public/csv', { maxAge: '1d' }));
+        this._app.use('/bower_components', express.static('../../bower_components', { maxAge: '1d' }));
     }
     _listen() {
         if (!this._appServerUp) {
