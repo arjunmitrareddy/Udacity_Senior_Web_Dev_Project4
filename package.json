@@ -44,7 +44,7 @@
     "dep": "npm install && bower install",
     "start": "gulp server",
     "serve": "gulp serve",
-    "postinstall": "bower install && gulp heroku"
+    "postinstall": "bower install"
   },
   "author": "Arjun Mitra Reddy Donthala",
   "license": "MIT"
