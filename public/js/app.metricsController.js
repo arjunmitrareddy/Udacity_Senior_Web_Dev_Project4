@@ -35,43 +35,43 @@
         }
 
         adjustView();
-
+        var backup;
         function lineChart(data) {
-            var defer = $q.defer();
                 mCtrl.lineChartData = data;
-                mCtrl.lineChart = {
-                    options: {
-                        chart: {
-                            renderTo: 'lineGraph'
-                        },
-                        title: {
-                            text: 'Paying Customers Over the Years (Live)'
-                        },
-                        xAxis: {
-                            categories: mCtrl.lineChartData ? mCtrl.lineChartData.years : []
-                        },
-                        yAxis: {
-                            title: {
-                                text: 'Customers (In Thousands)'
-                            }
-                        },
-                        series: [{
-                            name: 'Customers',
-                            data: (mCtrl.lineChartData) ? mCtrl.lineChartData.customers.slice(0, mCtrl.lineChartData.years.length) : []
-                        }],
+                backup = data;
 
-                        credits: {
-                            enabled: false
+                    mCtrl.lineChart = {
+                        options: {
+                            chart: {
+                                renderTo: 'lineGraph'
+                            },
+                            title: {
+                                text: 'Paying Customers Over the Years (Live)'
+                            },
+                            xAxis: {
+                                categories: mCtrl.lineChartData ? mCtrl.lineChartData.years : []
+                            },
+                            yAxis: {
+                                title: {
+                                    text: 'Customers (In Thousands)'
+                                }
+                            },
+                            series: [{
+                                name: 'Customers',
+                                data: (mCtrl.lineChartData) ? mCtrl.lineChartData.customers.slice(0, mCtrl.lineChartData.years.length) : []
+                            }],
+
+                            credits: {
+                                enabled: false
+                            }
                         }
-                    }
-                };
+                    };
+
+
             $scope.$apply();
-            defer.resolve();
-            return defer.promise;
         }
 
         function barChart(data) {
-            var defer = $q.defer();
                 mCtrl.barChartData = data;
                 if (mCtrl.barChartData) {
                     mCtrl.barChartData.issues = mCtrl.barChartData.issues.map(function(issue) {
@@ -83,36 +83,34 @@
                         return obj;
                     })
                 }
-                console.log(mCtrl.barChartData);
-                mCtrl.barChart = {
-                    options: {
-                        chart: {
-                            renderTo: 'barGraphBox',
-                            type: 'column'
-                        },
-                        title: {
-                            text: 'Reported Issues Status (Live)'
-                        },
-                        xAxis: {
-                            categories: mCtrl.barChartData ? mCtrl.barChartData.years : []
-                        },
-                        yAxis: {
+
+                    mCtrl.barChart = {
+                        options: {
+                            chart: {
+                                renderTo: 'barGraphBox',
+                                type: 'column'
+                            },
                             title: {
-                                text: 'Issues Reported (In Hundreds)'
+                                text: 'Reported Issues Status (Live)'
+                            },
+                            xAxis: {
+                                categories: mCtrl.barChartData ? mCtrl.barChartData.years : []
+                            },
+                            yAxis: {
+                                title: {
+                                    text: 'Issues Reported (In Hundreds)'
+                                }
+                            },
+                            series: mCtrl.barChartData ? mCtrl.barChartData.issues.slice(0, mCtrl.barChartData.years.length) : [],
+                            credits: {
+                                enabled: false
                             }
-                        },
-                        series: mCtrl.barChartData ? mCtrl.barChartData.issues.slice(0, mCtrl.barChartData.years.length) : [],
-                        credits: {
-                            enabled: false
                         }
-                    }
-                };
-            $scope.$apply();
-            /*$timeout(function() {
+                    };
+
+
                 $scope.$apply();
-            });*/
-            defer.resolve();
-            return defer.promise;
+
         }
         $rootScope.socket.on('poll-server', function(data) {
                 if (data.metrics && $state.current.name == 'metrics') {

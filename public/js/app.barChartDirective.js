@@ -18,22 +18,23 @@
                 scope.data = null;
                 attrs.$observe('options', function(value) {
                     if (!scope.chart) {
-                        try {
-                            scope.data = JSON.parse(value);
-                            scope.chart = new Highcharts.Chart(scope.data);
-                        }
-                        catch(e) {}
+                            if (value) {
+                                scope.data = JSON.parse(value);
+                                scope.chart = new Highcharts.Chart(scope.data);
+                            }
+
+
                     }
                     else {
                         try {
                             scope.data = JSON.parse(value);
                             for (var i=0; i<scope.chart.series.length; i++) {
+                                scope.chart.xAxis[i].setCategories(scope.data.xAxis.categories);
                                 scope.chart.series[i].setData(scope.data.series[i].data, true)
                             }
                         }
-                        catch(e){}
+                        catch(e) {}
                     }
-
                 });
             }
         }

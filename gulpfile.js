@@ -8,6 +8,8 @@ var wiredep = require('wiredep').stream;
 var del = require('del');
 var mergeStream = require('merge-stream');
 var args = process.argv.slice(3);
+var defer = require("gulp-defer");
+
 
 gulp.task('clean', () => {
     del(['build']);
@@ -61,7 +63,7 @@ gulp.task('babelify-client', () => {
     var cssFilter = plugins.filter('**/*.css', {restore: true});
     var jsFilter = plugins.filter('**/*.js', {restore: true});
     gulp.src('public/index.html').pipe(plugins.plumber()).pipe(assets).pipe(cssFilter).pipe(plugins.csso({comments: false})).pipe(plugins.sourcemaps.init()).pipe(plugins.sourcemaps.write('./')).pipe(cssFilter.restore)
-        .pipe(jsFilter).pipe(plugins.sourcemaps.init()).pipe(plugins.uglify()).pipe(plugins.sourcemaps.write('./')).pipe(jsFilter.restore)
+        .pipe(jsFilter)/*.pipe(plugins.sourcemaps.init()).pipe(plugins.uglify()).pipe(plugins.sourcemaps.write('./'))*/.pipe(jsFilter.restore)
         .pipe(gulp.dest('build/public'))
 });
 
@@ -120,7 +122,7 @@ gulp.task('refresh', (callback) => {
 
 gulp.task('heroku', (callback) => {
     runSequence('clean', 'css', 'wire-dep', 'copy', 'babelify-client', 'cache-templates', 'babelify-server', callback);
-    
+
 });
 
 gulp.task('serve', (callback) => {
